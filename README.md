@@ -2,7 +2,7 @@
 
 ![sample run](img/model2.gif)
 
-An implementation of the agent based model (ABM) ["Daisy World"](https://en.wikipedia.org/wiki/Daisyworld) with evolving daisys. The original model was aimed at showing how living organism can change the environment on a global scale (Watson & Lovelock, 1983).   This model rather shows how organisms conquer habitat. Simulates a spherical world, with solar energy getting weaker towards poles (upper and lower border) and being maximal at equator (middle)
+An implementation of the agent based model (ABM) ["Daisy World"](https://en.wikipedia.org/wiki/Daisyworld) with evolving daisys. The original model was aimed at showing how living organism can change the environment on a global scale (Watson & Lovelock, 1983).   This model rather shows how organisms adapt and conquer a habitat. Simulates a spherical world, with solar energy getting weaker towards poles (upper and lower border) and being maximal at equator (middle)
 
 ## Launch the model:
 Adapt the dimensions of the model in server.py. The dimensions of the model can have major impact on the behaviour, affecting the heat gradient and the relative influence sphere of each cell (togeher with "Radius of heat integration")
