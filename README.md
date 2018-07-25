@@ -1,6 +1,6 @@
 # Adaptive Daisyworld
 
-![sample run][img/sample.gif]
+![sample run](img/sample.gif)
 
 An implementation of the agent based model (ABM) ["Daisy World"](https://en.wikipedia.org/wiki/Daisyworld) with evolving daisys. The original model was aimed at showing how living organism can change the environment on a global scale (Watson & Lovelock, 1983).   This model rather shows how organisms conquer habitat. Simulates a spherical world, with solar energy getting weaker towards poles (upper and lower border) and being maximal at equator (middle)
 
