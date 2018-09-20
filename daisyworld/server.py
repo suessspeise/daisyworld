@@ -3,7 +3,7 @@ from mesa.visualization.modules import CanvasGrid
 from mesa.visualization.ModularVisualization import ModularServer, VisualizationElement
 from mesa.visualization.modules import ChartModule
 from mesa.visualization.UserParam import UserSettableParameter
-from model import DaisyModel
+from .model import DaisyModel
 import matplotlib.pyplot as plt
 import matplotlib.colors as col
 cmap = plt.cm.get_cmap("viridis")
