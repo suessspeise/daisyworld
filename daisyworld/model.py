@@ -6,9 +6,62 @@ from mesa.datacollection import DataCollector
 import math
 import random
 
+# Data collectors:
+def get_irradiance(model):
+    return model.luminosity
+
+def get_population(model):
+    return model.num_agents
+
+def get_mean_albedo(model):
+    # albedo[]
+    total = 0.0
+    number = 0
+    for a in model.schedule.agents:
+        # albedo.append(i.albedo)
+        total += a.albedo
+        number += 1
+    return total/number
+
+def get_north_south_population(model):
+    # albedo[]
+    equator = model.grid.height/2
+    north = 0
+    south = 0
+    for a in model.schedule.agents:
+        if a.pos[1] > equator:
+            north += 1
+        elif a.pos[1] < equator:
+            south += 1
+    return north - south
+
+
+
+# Solar models:
+def no_change(model):
+    return model.luminosity
+
+def linear_increase(model):
+    print("luminosity increased by", model.lum_increase, "to", model.luminosity)
+    return model.luminosity + model.lum_increase
+
+
+
 class DaisyModel(Model):
     """ "Daisys" grow, when the temperature is right. But they influence temperature themselves via their ability to block a certain amount of sunlight (albedo, indicated by color). They spread and they mutate (changing albedo) and thus adapt to different conditions."""
-    def __init__(self, N, width, height, luminosity, heat_radius, mutation_range, surface_albedo, daisy_lifespan, daisy_tmin, daisy_tmax):
+    def __init__(self, 
+                 N, 
+                 width, 
+                 height, 
+                 luminosity, 
+                 heat_radius, 
+                 mutation_range, 
+                 surface_albedo, 
+                 daisy_lifespan, 
+                 daisy_tmin, 
+                 daisy_tmax,
+                 lum_model,
+                 lum_increase):
         # Setup parameter
         self.dimensions = (width, height)
         self.running = True # never stop!
@@ -20,6 +73,8 @@ class DaisyModel(Model):
         self.luminosity = luminosity # default 1.35
         self.heat_radius = heat_radius
         self.surface_albedo = surface_albedo # default: 0.4
+        self.lum_model = lum_model
+        self.lum_increase = lum_increase # tried 0.001
         # Daisy parameter
         self.daisy_lifespan = daisy_lifespan
         self.daisy_tmin = daisy_tmin
@@ -39,7 +94,22 @@ class DaisyModel(Model):
             self.grid.place_agent(a, pos)
             position_list.remove(pos)
 
+        # Data collectors
+        self.datacollector = DataCollector(
+            model_reporters = {"Solar irradiance": get_irradiance, 
+                               "Population": get_population,
+                               "Mean albedo": get_mean_albedo,
+                               "Population: North - South": get_north_south_population
+                               }
+        )
+
     def step(self):
+        print(self.lum_model)
+        if self.lum_model == 'linear increase':
+            self.luminosity = linear_increase(self)
+
+
+        self.datacollector.collect(self)
         self.schedule.step()
         
 
@@ -93,10 +163,12 @@ class DaisyAgent(Agent):
         local_heat =  self.model.get_local_heat(self.pos)
         temperature_stress = (local_heat > self.tmax) | (local_heat < self.tmin)
 
-        if self.age > self.life_span: # too old 
+        if (self.age > self.life_span) and bool(random.getrandbits(1)): # too old + random factor to avoid simultaneous death of a generation
+            self.model.num_agents -= 1
             self.model.grid._remove_agent(self.pos, self)
             self.model.schedule.remove(self)
         elif temperature_stress: # too hot or too cold
+            self.model.num_agents -= 1
             self.model.grid._remove_agent(self.pos, self)
             self.model.schedule.remove(self)
         else: # just rigth, reproduce
@@ -108,6 +180,7 @@ class DaisyAgent(Agent):
                                             ) 
                     self.model.grid.place_agent(offspring, i)
                     self.model.schedule.add(offspring)
+                    self.model.num_agents += 1
 
     def step(self):
         self.age += 1

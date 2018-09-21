@@ -1,5 +1,5 @@
 mesa
 math
 random
-numpy
+numpy #not used ? 
 matplotlib
