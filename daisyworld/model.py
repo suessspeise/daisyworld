@@ -182,8 +182,8 @@ class DaisyAgent(Agent):
                 if self.model.grid.is_cell_empty(i) :
                     # offspring inherits albedo, +- mutation_range, never out of bounds (0.1-0.9)
                     offspring = DaisyAgent(i, self.model, 
-                                            random.uniform(max([albedo_min,self.albedo-self.model.mutation_range]), 
-                                                           min([albedo_max, self.albedo+self.model.mutation_range])), 
+                                            random.uniform(max([self.albedo_min,self.albedo-self.model.mutation_range]), 
+                                                           min([self.albedo_max, self.albedo+self.model.mutation_range])), 
                                             self.life_span, self.tmin, self.tmax
                                             ) 
                     self.model.grid.place_agent(offspring, i)
