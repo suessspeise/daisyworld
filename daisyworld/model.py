@@ -150,6 +150,10 @@ class DaisyModel(Model):
 
 class DaisyAgent(Agent):
     """ A Daisy. """
+
+    albedo_min = 0.1
+    albedo_max = 0.9 
+
     def __init__(self, unique_id, model, albedo, life_span, tmin, tmax):
         super().__init__(unique_id, model)
         self.albedo = albedo
@@ -162,20 +166,24 @@ class DaisyAgent(Agent):
         # get local temperature
         local_heat =  self.model.get_local_heat(self.pos)
         temperature_stress = (local_heat > self.tmax) | (local_heat < self.tmin)
-
-        if (self.age > self.life_span) and bool(random.getrandbits(1)): # too old + random factor to avoid simultaneous death of a generation
+        # too old + random factor to avoid simultaneous death of a generation
+        if (self.age > self.life_span) and bool(random.getrandbits(1)): 
             self.model.num_agents -= 1
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
-        elif temperature_stress: # too hot or too cold
+        # too hot or too cold
+        elif temperature_stress: 
             self.model.num_agents -= 1
             self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
-        else: # just rigth, reproduce
+        # just rigth, reproduce
+        else: 
             for i in self.model.grid.get_neighborhood(self.pos, moore=True, include_center=False):
                 if self.model.grid.is_cell_empty(i) :
+                    # offspring inherits albedo, +- mutation_range, never out of bounds (0.1-0.9)
                     offspring = DaisyAgent(i, self.model, 
-                                            random.uniform(max([0.1,self.albedo-self.model.mutation_range]), min([0.9, self.albedo+self.model.mutation_range])), # offspring inherits albedo, +- mutation_range, never out of bounds (0.1-0.9)
+                                            random.uniform(max([albedo_min,self.albedo-self.model.mutation_range]), 
+                                                           min([albedo_max, self.albedo+self.model.mutation_range])), 
                                             self.life_span, self.tmin, self.tmax
                                             ) 
                     self.model.grid.place_agent(offspring, i)
