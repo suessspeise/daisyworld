@@ -165,11 +165,11 @@ class DaisyAgent(Agent):
 
         if (self.age > self.life_span) and bool(random.getrandbits(1)): # too old + random factor to avoid simultaneous death of a generation
             self.model.num_agents -= 1
-            self.model.grid._remove_agent(self.pos, self)
+            self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         elif temperature_stress: # too hot or too cold
             self.model.num_agents -= 1
-            self.model.grid._remove_agent(self.pos, self)
+            self.model.grid.remove_agent(self)
             self.model.schedule.remove(self)
         else: # just rigth, reproduce
             for i in self.model.grid.get_neighborhood(self.pos, moore=True, include_center=False):

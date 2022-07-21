@@ -24,6 +24,7 @@ cell_size = 10
 default_agent_number =  100
 width = 30
 height = width *3
+width = height
 
 # Grid
 grid = CanvasGrid(agent_portrayal, width, height, width*cell_size, height*cell_size)
